@@ -1,32 +1,28 @@
-function [dates, vals, pCode] = getDataNWIS(siteID, pCode, startDT)
+function [dates, vals, pCode] = getIvDataNWIS(siteID, pCode, startDT)
 
+% instantaneous data retrieval
 % --- variables
 baseURL= 'http://waterservices.usgs.gov/nwis/iv/';
+% agency siteID dateTime timezone value code
 reader = '%s %f %s %s';
 delim = '\t';
-numHead = 24;
+numHead = 25;
 paramSt = 16;
 dI    = 3;
 % --- variables
 
-if lt(nargin,5)
-    statCd = '00003';
-end
-
 if eq(nargin,2)
     startDT = '2010-10-01';
-    endDT = datestr(now,'yyyy-mm-dd');
 end
 
 if eq(nargin,0)
     siteID = '04010500';
     pCode = {'00060'};
     startDT = '2010-10-01';
-    endDT = datestr(now,'yyyy-mm-dd');
 end
 
 
-
+%% build call URL
 URL = [baseURL '?sites=' siteID];
 
 useI = 5;
@@ -44,6 +40,7 @@ else
     URL = [URL '&parameterCd=' pCode];
     numCodes = 1;
     pCode = {pCode};
+    reader = [reader ' %s %s'];
 end
 URL = [URL '&format=rdb,&startDT=' startDT];
 
@@ -64,13 +61,15 @@ for i = 1:numCodes
     end
     pCode{i} = txt(11:15);
 end
-data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead);
-dates = data{dI};
-vals = cell(length(dates),numCodes);
-for j = 1:length(dates);
+data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead+1);
+time = data{dI};
+vals = NaN(length(time),numCodes);
+dates = datenum(time);
+for j = 1:length(time);
     for i = 1:numCodes
-        vals{j,i} = data{useI(i)}(j);
+        vals(j,i) = str2double(data{useI(i)}(j));
     end
+    
 end
 
 
