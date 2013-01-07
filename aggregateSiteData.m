@@ -2,7 +2,11 @@ function aggregateSiteData
 
 rootDir = 'D:\GRLI\';
 dataFldr= 'Oracle_Data_new\';
-resultDir = '\\IGSARMEWFSAPB\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+if ispc
+    resultDir = '\Volumes\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+else
+    resultDir = '\Volumes\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+end
 delim = '\t';
 treatAsEmpty = {'na','NA','#VALUE!','#NAME?','None'};
 availFiles = dir(fullfile([rootDir dataFldr '*.txt']));
