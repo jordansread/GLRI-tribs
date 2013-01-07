@@ -1,11 +1,15 @@
 function aggregateSiteData
 
-rootDir = 'D:\GRLI\';
-dataFldr= 'Oracle_Data_new\';
+
+
 if ispc
-    resultDir = '\Volumes\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+    rootDir = '\\IGSARMEWFSAPB\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\';
+    resultDir = '\\IGSARMEWFSAPB\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+    dataFldr= 'Oracle_Data\';
 else
-    resultDir = '\Volumes\Projects\QW Monitoring Team\GLRI toxics\Data Analysis\Data\Site Data\';
+    resultDir = '/Volumes/projects/QW Monitoring Team/GLRI toxics/Data Analysis/Data/Site Data/';
+    rootDir = '/Volumes/projects/QW Monitoring Team/GLRI toxics/Data Analysis/Data/';
+    dataFldr= 'Oracle_Data/';
 end
 delim = '\t';
 treatAsEmpty = {'na','NA','#VALUE!','#NAME?','None'};
