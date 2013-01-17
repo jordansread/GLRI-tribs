@@ -4,6 +4,8 @@ function plotCompareSamples
 rootDir = '/Volumes/projects/QW Monitoring Team/GLRI toxics/Data Analysis/';
 sampleKeyFldr = 'OWCs/OWCs from autosamplers vs EWIs/';
 dataFldr= 'Oracle_Data/';
+figFldr = 'Figures/';
+yNum = 4;
 
 
 %% get parameters for analysis
@@ -28,9 +30,11 @@ for k = 1:length(unSites)
     valArray = NaN(numSmpl, length(params), 2);
     % -- now look for the values in the files --
     site = ['0' unSites{k}];
+    toss = false(length(params),1);
     for p = 1:length(params)
         fileN = [rootDir dataFldr site '_' params{p} '.txt'];
         fID = fopen(fileN);
+        
         if gt(fID,0)
             [dates, vals, errCd] = glriFileOpen(fileN);
             useAuto = autoDt(useSi);
@@ -49,21 +53,25 @@ for k = 1:length(unSites)
                     rmkCode(d,p,2) = errCd(useI);
                     valArray(d,p,2) = vals(useI);
                 end
-                % if valArray(.,.,2) still empty, throw away
             end 
+            if all(isnan(valArray(:,p,2)))
+                toss(p) = true;
+            end
+        else
+            toss(p) = true;
         end
     end
     % for each site, write figure
     % get final list of parameters for plot (sort by (.,.,2))
-    rmvI = all(isnan(valArray(:,:,2)));
+    rmvI = toss;
     totlP = sum(eq(rmvI,false));
-    numX = ceil(totlP/3);
+    numX = ceil(totlP/yNum);
     close all;
-    [fig_h,ax_h] = createPanelPlot(numX,3, 15, 6);
-    cnt = 1;
+    [fig_h,ax_h] = createPanelPlot(numX,yNum, 15, 6);
+    cnt = 0;
     for i = 1:length(rmvI)
         if ~rmvI(i)
-            
+            cnt = cnt+1;
             useI = ~isnan(valArray(:,i,2));
             set(ax_h(cnt),'XLim',[0 sum(useI)]);
             ylabel(['P' params{i}],'Parent',ax_h(cnt))
@@ -79,11 +87,16 @@ for k = 1:length(unSites)
                     end
                 end
             end
-            cnt = cnt+1;
+            
         end
     end
-    for i = cnt:totlP
+    
+    numGen = numX*yNum;
+    for i = numGen:-1:totlP+1
         delete(ax_h(i));
+    end
+    if ne(cnt,0)
+        print([rootDir figFldr site '_EWIvsAuto'], '-dpng','-r400')
     end
 end
 end

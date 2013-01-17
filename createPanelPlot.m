@@ -7,8 +7,8 @@ end
 
 % -- variables --
 lM = .75;
-rM = .5;
-bM = .75;
+rM = .25;
+bM = .25;
 tM = .25;
 xSpc = .5;
 ySpc = 0.5;
@@ -29,7 +29,8 @@ for j = numY:-1:1
         pos = [(lM+(i-1)*(W+xSpc))/figW (bM+(j-1)*(H+ySpc))/figH ...
             W/figW H/figH];
         ax_h(cnt) = axes('Parent',fig_h,'Position',pos,'box','on',...
-            'XTick',[],'FontSize',6,'FontName','Times New Roman');
+            'XTick',[],'FontSize',6,'FontName','Times New Roman',...
+            'LineWidth',.9);
         hold on;
         cnt = cnt+1;
     end
