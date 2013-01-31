@@ -1,13 +1,15 @@
 function [dates, vals, pCode] = getDvDataNWIS(siteID, pCode, startDT)
 
+% this code is really bad and should be fixed.
 % instantaneous data retrieval
 % --- variables
 baseURL= 'http://waterservices.usgs.gov/nwis/dv/';
-reader = '%s %f %s %s';
+reader = '%s %f %s %s %s';
 delim = '\t';
 numHead = 24;
 paramSt = 16;
 dI    = 3;
+wtrI  = 4;
 % --- variables
 
 if lt(nargin,5)
@@ -51,26 +53,13 @@ URL = [URL '&format=rdb,&startDT=' startDT];
 
 urlString = urlread(URL);
 
-% get pCodes for headers
-pLines = textscan(urlString,'%s',numCodes,...
-    'Delimiter',delim,'HeaderLines',paramSt);
-for i = 1:numCodes
-    txt = pLines{1}{i};
-    if lt(length(txt),15)
-        numCodes = i-1;
-        pCode = pCode(1:i-1);
-        reader = reader(1:end-5);
-        numHead = numHead-1;
-        break
-    end
-    pCode{i} = txt(11:15);
-end
-data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead);
-dates = data{dI};
-vals = cell(length(dates),numCodes);
+
+data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead+2);
+dates = datenum(data{dI},'yyyy-mm-dd');
+vals = NaN(length(dates),1);
 for j = 1:length(dates);
     for i = 1:numCodes
-        vals{j,i} = data{useI(i)}(j);
+        vals(j) = str2double(data{wtrI}(j));
     end
 end
 
