@@ -84,6 +84,9 @@ for k = 1:numSites
     % -- measurement times for parameter --
     fileN = [siteIDs{k} '_' pCode '.txt'];
     fID = fopen([rootDir dataFldr fileN]);
+    if lt(fID,0)
+        keyboard
+    end
     dat   = textscan(fID,'%s %f %s %f','Delimiter',delim,...
         'treatAsEmpty',treatAsEmpty,'HeaderLines',1);
     fclose all;
@@ -114,9 +117,11 @@ for k = 1:numSites
         
         gage = false;
     catch
-        disp(['site ' siteIDs{k} ' switched to gage'])
-        [Qdates, Qdaily] = getDvDataNWIS(siteIDs{k}, '00065', startDT);        
-        gage = true;
+        disp(['site ' siteIDs{k} ' switched to IV'])
+        [Qdates, Qdaily] = getIvDataNWIS(siteIDs{k}, distPcode, startDT);
+        [Qdaily,Qdates] = downsample_interval(Qdaily,Qdates,86400);
+        %[Qdates, Qdaily] = getDvDataNWIS(siteIDs{k}, '00065', startDT);        
+        %gage = true;
     end
     nanI = isnan(Qdaily);
     Qdates = Qdates(~nanI);
