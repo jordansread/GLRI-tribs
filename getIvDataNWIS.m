@@ -61,11 +61,12 @@ for i = 1:numCodes
     end
     pCode{i} = txt(11:15);
 end
-data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead+1);
+data = textscan(urlString,reader,'Delimiter',delim,'HeaderLines',numHead+3);
 time = data{dI};
 vals = NaN(length(time),numCodes);
-dates = datenum(time);
+dates = NaN(length(time),1);
 for j = 1:length(time);
+    dates(j) = datenum(time(j));
     for i = 1:numCodes
         vals(j,i) = str2double(data{useI(i)}(j));
     end
