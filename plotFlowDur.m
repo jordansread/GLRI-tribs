@@ -38,9 +38,10 @@ distPcode = '00060';
 startDT = '2010-10-01';
 yScale = 'log';
 figDir = 'I:\GLRI Tribs\Figures\';
-rootDir = 'I:\GLRI Tribs\';
-sondFldr= 'Data\Site Data\'; 
-dataFldr= 'Oracle_Data\';
+rootDir = ['/Volumes/projects/QW Monitoring Team/GLRI toxics/'...
+    'Data Analysis/'];
+%sondFldr= 'Data\Site Data\'; 
+dataFldr= 'Oracle_data/';
 delim = '\t';
 treatAsEmpty = {'na','NA','#VALUE!','#NAME?','None'};
 combineSID = {'04157000' '04157005'; '04193500' '04193490'};
@@ -83,7 +84,7 @@ for k = 1:numSites
     % -- measurement times for parameter --
     fileN = [siteIDs{k} '_' pCode '.txt'];
     fID = fopen([rootDir dataFldr fileN]);
-    dat   = textscan(fID,'%s %f %s','Delimiter',delim,...
+    dat   = textscan(fID,'%s %f %s %f','Delimiter',delim,...
         'treatAsEmpty',treatAsEmpty,'HeaderLines',1);
     fclose all;
     dates = datenum(dat{1},'yyyy-mm-dd');
@@ -108,24 +109,21 @@ for k = 1:numSites
     end
     % -- discharge aggregation --
     try
-        [Qdates, Q] = getIvDataNWIS(siteIDs{k}, distPcode, startDT);
-        [Qdaily,Qdates] = downsample_interval(Q,Qdates,86400);
+        [Qdates, Qdaily] = getDvDataNWIS(siteIDs{k}, distPcode, startDT);
+        %[Qdaily,Qdates] = downsample_interval(Q,Qdates,86400);
         
         gage = false;
     catch
         disp(['site ' siteIDs{k} ' switched to gage'])
-        [Qdates, Q] = getIvDataNWIS(siteIDs{k}, '00065', startDT);
-        [Qdaily,Qdates] = downsample_interval(Q,Qdates,86400);
-        
+        [Qdates, Qdaily] = getDvDataNWIS(siteIDs{k}, '00065', startDT);        
         gage = true;
     end
-%     nanI = isnan(Qdaily); %| lt(Q,0);
-%     Qdates = Qdates(~nanI);
-%     Qdaily = Qdaily(~nanI);
-    [srtQ,srtI] = sort(Qdaily);
-    srtQ = wrev(srtQ);
+    nanI = isnan(Qdaily);
+    Qdates = Qdates(~nanI);
+    Qdaily = Qdaily(~nanI);
+    [srtQ,srtI] = sort(-Qdaily); % reverse sort
+    srtQ = -srtQ;
     Qdates = Qdates(srtI);
-    Qdates = wrev(Qdates);
     xNumz = linspace(0,100,length(srtQ));
     plot(xNumz,srtQ,'Parent',ax_h(plotCnt),'LineWidth',LW)
     % now...find the sampling locations
