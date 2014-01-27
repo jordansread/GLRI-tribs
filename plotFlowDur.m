@@ -110,6 +110,7 @@ for k = 1:numSites
             disp([siteIDs{k} ' combined with ' comSID{1}])
         end
     end
+    dates = floor(dates);
     % -- discharge aggregation --
     try
         [Qdates, Qdaily] = getDvDataNWIS(siteIDs{k}, distPcode, startDT);

@@ -1,4 +1,4 @@
-function [dates, vals, pCode] = getIvDataNWIS(siteID, pCode, startDT)
+function [dates, vals, pCode] = getIvDataNWIS(siteID, pCode, startDT, endDT)
 
 % instantaneous data retrieval
 % --- variables
@@ -13,12 +13,14 @@ dI    = 3;
 
 if eq(nargin,2)
     startDT = '2010-10-01';
+    endDT   = '2013-01-01';
 end
 
 if eq(nargin,0)
     siteID = '04010500';
     pCode = {'00060'};
     startDT = '2010-10-01';
+    endDT   = '2013-01-01';
 end
 
 
@@ -42,7 +44,7 @@ else
     pCode = {pCode};
     reader = [reader ' %s %s'];
 end
-URL = [URL '&format=rdb,&startDT=' startDT];
+URL = [URL '&format=rdb,&startDT=' startDT '&endDT=' endDT];
 
 
 urlString = urlread(URL);
